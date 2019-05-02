@@ -11,5 +11,5 @@ public final class WebPageSettings {
 
     public final static String HTML_SUFFIX = ".html";
 
-    public final static String FLWS_FORMAT = FLWS_ROOT + "{0}" + HTML_SUFFIX;
+    public final static String FLWS_FORMAT = FLWS_ROOT + "%s" + HTML_SUFFIX;
 }
