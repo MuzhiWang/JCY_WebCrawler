@@ -16,5 +16,9 @@ public final class WebPageSettings {
     public final static String FLWS_FORMAT = FLWS_ROOT + "%s" + HTML_SUFFIX;
 
     // 法律文书 - 不起诉决定书
-    public final static String FLWS_BQSJDS_TAB_ID = "tab_3";
+    public final static String FLWS_BQSJDS_PAGE_ID = "page_3";
+
+    public final static class HTML {
+        public final static String Href = "href";
+    }
 }

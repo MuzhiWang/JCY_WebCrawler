@@ -1,5 +1,6 @@
 package UX;
 
+import Core.JCYWebCrawler;
 import Settings.WebPageSettings;
 import Tools.HTMLUtils;
 import Tools.Log;
@@ -17,8 +18,11 @@ public class Main extends Application {
 //        HTMLUtils.openFiddlerDebug();
 
 
-        Document doc = HTMLUtils.parseHtmlAsDocument(String.format(WebPageSettings.FLWS_FORMAT, WebPageSettings.ROOT_INDEX));
-        Log.log(doc);
+//        Document doc = HTMLUtils.parseHtmlAsDocument(String.format(WebPageSettings.FLWS_FORMAT, WebPageSettings.ROOT_INDEX));
+//        Log.log(doc);
+
+        JCYWebCrawler webCrawler = new JCYWebCrawler();
+        webCrawler.run();
 
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         primaryStage.setTitle("Hello World");

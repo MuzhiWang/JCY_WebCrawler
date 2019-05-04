@@ -33,7 +33,6 @@ public abstract class WebCrawlerBase implements Runnable {
             this.beforeEnd();
         } catch (Exception ex) {
             Log.log(ex.toString());
-            throw ex;
         }
     }
 }
