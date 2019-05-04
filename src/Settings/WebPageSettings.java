@@ -5,8 +5,10 @@ package Settings;
  */
 public final class WebPageSettings {
 
+    public final static String JCY_ROOT = "http://www.ajxxgk.jcy.gov.cn/";
+
     // 法律文书
-    public final static String FLWS_ROOT = "http://www.ajxxgk.jcy.gov.cn/html/zjxflws/";
+    public final static String FLWS_ROOT = JCY_ROOT + "html/zjxflws/";
 
     public final static String ROOT_INDEX = "index";
 
@@ -18,7 +20,15 @@ public final class WebPageSettings {
     // 法律文书 - 不起诉决定书
     public final static String FLWS_BQSJDS_PAGE_ID = "page_3";
 
+    public final static String ARTICLE_CONTENT_ID = "Article";
+
     public final static class HTML {
         public final static String Href = "href";
+
+        public final static String Title = "title";
+
+        public final static String Paragraph = "p";
+
+        public final static String Span = "span";
     }
 }

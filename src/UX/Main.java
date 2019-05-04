@@ -21,7 +21,7 @@ public class Main extends Application {
 //        Document doc = HTMLUtils.parseHtmlAsDocument(String.format(WebPageSettings.FLWS_FORMAT, WebPageSettings.ROOT_INDEX));
 //        Log.log(doc);
 
-        JCYWebCrawler webCrawler = new JCYWebCrawler();
+        JCYWebCrawler webCrawler = new JCYWebCrawler(".");
         webCrawler.run();
 
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));

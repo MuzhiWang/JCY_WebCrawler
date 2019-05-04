@@ -2,8 +2,8 @@ package Core;
 
 import Tools.Log;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -11,10 +11,10 @@ import java.util.Set;
  */
 public abstract class WebCrawlerBase implements Runnable {
 
-    protected Set<String> visitedPages;
+    protected Map<String, String> visitedPages;
 
     public WebCrawlerBase() {
-        this.visitedPages = new HashSet<>();
+        this.visitedPages = new HashMap<>();
     }
 
     protected abstract void onStart();
