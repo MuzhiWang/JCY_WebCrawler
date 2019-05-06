@@ -1,6 +1,5 @@
-package UX;
-
 import Core.JCYWebCrawler;
+import Database.MongoDB;
 import Settings.WebPageSettings;
 import Tools.HTMLUtils;
 import Tools.Log;
@@ -21,10 +20,12 @@ public class Main extends Application {
 //        Document doc = HTMLUtils.parseHtmlAsDocument(String.format(WebPageSettings.FLWS_FORMAT, WebPageSettings.ROOT_INDEX));
 //        Log.log(doc);
 
-        JCYWebCrawler webCrawler = new JCYWebCrawler(".");
-        webCrawler.run();
+        MongoDB.initialize();
 
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+//        JCYWebCrawler webCrawler = new JCYWebCrawler(".");
+//        webCrawler.run();
+
+        Parent root = FXMLLoader.load(getClass().getResource(".\\UX\\sample.fxml"));
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root, 300, 275));
         primaryStage.show();
