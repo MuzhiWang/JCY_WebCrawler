@@ -20,10 +20,10 @@ public class Main extends Application {
 //        Document doc = HTMLUtils.parseHtmlAsDocument(String.format(WebPageSettings.FLWS_FORMAT, WebPageSettings.ROOT_INDEX));
 //        Log.log(doc);
 
-        MongoDB.initialize();
+//        MongoDB mongoDB = new MongoDB();
 
-//        JCYWebCrawler webCrawler = new JCYWebCrawler(".");
-//        webCrawler.run();
+        JCYWebCrawler webCrawler = new JCYWebCrawler(".");
+        webCrawler.run();
 
         Parent root = FXMLLoader.load(getClass().getResource(".\\UX\\sample.fxml"));
         primaryStage.setTitle("Hello World");

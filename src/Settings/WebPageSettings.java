@@ -5,6 +5,8 @@ package Settings;
  */
 public final class WebPageSettings {
 
+    public final static int HTTP_NOT_FOUND = 404;
+
     public final static String JCY_ROOT = "http://www.ajxxgk.jcy.gov.cn/";
 
     // 法律文书

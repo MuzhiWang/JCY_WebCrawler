@@ -1,6 +1,9 @@
 package Core;
 
+import Database.MongoDB;
+import LocalException.PageNotExistException;
 import Settings.WebPageSettings;
+import Tools.DocumentUtils;
 import Tools.FileUtils;
 import Tools.HTMLUtils;
 import Tools.Log;
@@ -15,9 +18,9 @@ import java.util.List;
  */
 public final class JCYWebCrawler extends WebCrawlerBase {
 
-    private static final String ROOT_PAGE = String.format(WebPageSettings.FLWS_FORMAT, WebPageSettings.FLWS_ROOT);
-
     private static String ROOT_FOLDER;
+
+    private MongoDB mongoDB;
 
     public JCYWebCrawler(String rootFolder) {
         this.ROOT_FOLDER = rootFolder;
@@ -26,12 +29,36 @@ public final class JCYWebCrawler extends WebCrawlerBase {
 
     @Override
     protected void onStart() {
-
+        this.initialExistFilesMap();
+        this.mongoDB = new MongoDB();
     }
 
     @Override
     protected void inProcess() throws Exception {
-        Document rootPage = HTMLUtils.parseHtmlAsDocument(WebPageSettings.FLWS_ROOT);
+        for (int i = 2; i < 3; ++i) {
+            if (i == 1) {
+                this.querySummaryPage("");
+            } else {
+                this.querySummaryPage(Integer.toString(i));
+            }
+        }
+    }
+
+    @Override
+    protected void beforeEnd() {
+
+    }
+
+    // Query summary page with list of documents.
+    private void querySummaryPage(String pageIndex) throws Exception {
+        String url = pageIndex == "" ? WebPageSettings.FLWS_ROOT + pageIndex : String.format(WebPageSettings.FLWS_FORMAT, pageIndex);
+        Document rootPage;
+        try {
+            rootPage = HTMLUtils.parseHtmlAsDocument(url);
+        } catch (PageNotExistException ex) {
+            Log.log(String.format("Page not exist with url: %s", url));
+            throw ex;
+        }
 
         // 不起诉决定书
         Element tab_3_bqsjds = rootPage.selectFirst("div#" + WebPageSettings.FLWS_BQSJDS_PAGE_ID);
@@ -54,23 +81,30 @@ public final class JCYWebCrawler extends WebCrawlerBase {
             String timeStr = time.text();
             Log.log(timeStr);
 
-            this.getAndGenerateQiSuShu(WebPageSettings.JCY_ROOT + link, timeStr, title);
+            JCYDocument jcyDocument = this.getAndGenerateQiSuShu(WebPageSettings.JCY_ROOT + link, timeStr, title);
+
+            if (jcyDocument != null) {
+                DocumentUtils.upsertDocumentById(this.mongoDB.getJcyCollection(), jcyDocument);
+            }
+
             Thread.sleep(2000);
         }
     }
 
-    @Override
-    protected void beforeEnd() {
-
-    }
-
     // 起诉书
-    private void getAndGenerateQiSuShu(String url, String date, String title) throws Exception {
+    private JCYDocument getAndGenerateQiSuShu(String url, String date, String title) throws Exception {
         if (this.checkFileExist(title, date)) {
-            return;
+            return null;
         }
 
-        Document qiSuShuPage = HTMLUtils.parseHtmlAsDocument(url);
+        Document qiSuShuPage;
+        try {
+            qiSuShuPage = HTMLUtils.parseHtmlAsDocument(url);
+        } catch (PageNotExistException ex) {
+            Log.log(String.format("Document with title %s, url %s, data %s not exist", title, url, date));
+            return null;
+        }
+
         Element article = qiSuShuPage.selectFirst("div#" + WebPageSettings.ARTICLE_CONTENT_ID);
 
         StringBuilder sb = new StringBuilder();
@@ -85,6 +119,10 @@ public final class JCYWebCrawler extends WebCrawlerBase {
         }
 
         Log.log(sb.toString());
+
+        JCYDocument document = new JCYDocument(date, sb.toString(), url);
+
+        return document;
     }
 
     private void initialExistFilesMap() {

@@ -1,10 +1,11 @@
 package Tools;
 
+import LocalException.PageNotExistException;
 import org.jsoup.Connection;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,9 +39,14 @@ public final class HTMLUtils {
                     .method(Connection.Method.GET)
                     .execute()
                     .parse();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Log.log(ex);
-            throw ex;
+
+            if (ex instanceof HttpStatusException
+                    && ((HttpStatusException)ex).getStatusCode() == 404) {
+                Log.log("Page not exist");
+                throw new PageNotExistException();
+            } else throw ex;
         }
 
         return doc;
@@ -52,4 +58,5 @@ public final class HTMLUtils {
         System.setProperty("http.proxyPort", "8888");
         System.setProperty("https.proxyPort", "8888");
     }
+
 }
