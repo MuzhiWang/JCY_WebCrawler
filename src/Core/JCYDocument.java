@@ -1,6 +1,7 @@
 package Core;
 
-import Tools.DocumentUtils;
+import Settings.DatabaseSettings;
+import Tools.MongoDBUtils;
 import org.bson.Document;
 
 import java.util.Date;
@@ -19,6 +20,8 @@ public final class JCYDocument extends Document {
 
     private long createdDateTime;
 
+    private String title;
+
     public String getDateStr() { return this.dateStr; }
 
     public String getContent() { return this.content; }
@@ -29,12 +32,20 @@ public final class JCYDocument extends Document {
 
     public long getCreatedDateTime() { return this.createdDateTime; }
 
-    public JCYDocument(String dateStr, String content, String url) {
+    public String getTitle() { return this.title; }
+
+    public JCYDocument(String dateStr, String content, String url, String title) {
         this.setDateStr(dateStr);
         this.setContent(content);
         this.setOriginalUrl(url);
+        this.setTitle(title);
         this.set_id();
         this.setCreatedDateTime();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Title: %s, dateStr: %s, url: %s", this.getTitle(), this.dateStr, this.getOriginalUrl());
     }
 
     private void setDateStr(String dateStr) {
@@ -53,13 +64,18 @@ public final class JCYDocument extends Document {
     }
 
     private void set_id() {
+        this._id = MongoDBUtils.generateId(this.getDateStr(), this.getOriginalUrl());
         this.update("_id", this.get_id());
-        this._id = DocumentUtils.generateId(this.getDateStr(), this.getOriginalUrl());
     }
 
     private void setCreatedDateTime() {
         this.createdDateTime = new Date().getTime();
         this.update("CreatedDateTime", this.createdDateTime);
+    }
+
+    private void setTitle(String title) {
+        this.title = title;
+        this.update("Title", title);
     }
 
     private void update(String key, Object val) {

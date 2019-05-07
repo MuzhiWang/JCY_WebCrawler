@@ -3,7 +3,7 @@ package Core;
 import Database.MongoDB;
 import LocalException.PageNotExistException;
 import Settings.WebPageSettings;
-import Tools.DocumentUtils;
+import Tools.MongoDBUtils;
 import Tools.FileUtils;
 import Tools.HTMLUtils;
 import Tools.Log;
@@ -31,15 +31,25 @@ public final class JCYWebCrawler extends WebCrawlerBase {
     protected void onStart() {
         this.initialExistFilesMap();
         this.mongoDB = new MongoDB();
+
+        List<org.bson.Document> docs = MongoDBUtils.queryDocumentByContent(this.mongoDB.getJcyCollection(), "不诉", 10);
+        for (org.bson.Document doc : docs) {
+            JCYDocument jcyDoc = (JCYDocument) doc;
+            Log.log(jcyDoc);
+        }
     }
 
     @Override
     protected void inProcess() throws Exception {
-        for (int i = 2; i < 3; ++i) {
+        for (int i = 350; i < 351; ++i) {
             if (i == 1) {
-                this.querySummaryPage("");
+                if (!this.querySummaryPage("")) {
+                    break;
+                }
             } else {
-                this.querySummaryPage(Integer.toString(i));
+                if (!this.querySummaryPage(Integer.toString(i))) {
+                    break;
+                }
             }
         }
     }
@@ -50,7 +60,8 @@ public final class JCYWebCrawler extends WebCrawlerBase {
     }
 
     // Query summary page with list of documents.
-    private void querySummaryPage(String pageIndex) throws Exception {
+    // Return if exist new files. True exist, false not exist.
+    private boolean querySummaryPage(String pageIndex) throws Exception {
         String url = pageIndex == "" ? WebPageSettings.FLWS_ROOT + pageIndex : String.format(WebPageSettings.FLWS_FORMAT, pageIndex);
         Document rootPage;
         try {
@@ -65,6 +76,7 @@ public final class JCYWebCrawler extends WebCrawlerBase {
 
         Element content_ul = tab_3_bqsjds.selectFirst("ul");
 
+        boolean hasNewFile = false;
         for (Element li : content_ul.select("li")) {
             // Composite Title
             Element ctitle = li.selectFirst("div.ctitle");
@@ -84,11 +96,15 @@ public final class JCYWebCrawler extends WebCrawlerBase {
             JCYDocument jcyDocument = this.getAndGenerateQiSuShu(WebPageSettings.JCY_ROOT + link, timeStr, title);
 
             if (jcyDocument != null) {
-                DocumentUtils.upsertDocumentById(this.mongoDB.getJcyCollection(), jcyDocument);
+                if (MongoDBUtils.upsertDocumentById(this.mongoDB.getJcyCollection(), jcyDocument)) {
+                    hasNewFile = true;
+                }
             }
 
             Thread.sleep(2000);
         }
+
+        return hasNewFile;
     }
 
     // 起诉书
@@ -120,7 +136,7 @@ public final class JCYWebCrawler extends WebCrawlerBase {
 
         Log.log(sb.toString());
 
-        JCYDocument document = new JCYDocument(date, sb.toString(), url);
+        JCYDocument document = new JCYDocument(date, sb.toString(), url, title);
 
         return document;
     }
