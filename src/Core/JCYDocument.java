@@ -1,6 +1,5 @@
 package Core;
 
-import Settings.DatabaseSettings;
 import Tools.MongoDBUtils;
 import org.bson.Document;
 
@@ -10,11 +9,11 @@ import java.util.Date;
  * Created by muwang on 5/7/2019.
  */
 public final class JCYDocument extends Document {
-    private String dateStr;
+    private String date;
 
     private String content;
 
-    private String originalUrl;
+    private String url;
 
     private String _id;
 
@@ -22,11 +21,11 @@ public final class JCYDocument extends Document {
 
     private String title;
 
-    public String getDateStr() { return this.dateStr; }
+    public String getDate() { return this.date; }
 
     public String getContent() { return this.content; }
 
-    public String getOriginalUrl() { return this.originalUrl; }
+    public String getUrl() { return this.url; }
 
     public String get_id() { return this._id; }
 
@@ -34,10 +33,13 @@ public final class JCYDocument extends Document {
 
     public String getTitle() { return this.title; }
 
+    // Empty constructor just used for Json deserialize.
+    public JCYDocument() {}
+
     public JCYDocument(String dateStr, String content, String url, String title) {
-        this.setDateStr(dateStr);
+        this.setDate(dateStr);
         this.setContent(content);
-        this.setOriginalUrl(url);
+        this.setUrl(url);
         this.setTitle(title);
         this.set_id();
         this.setCreatedDateTime();
@@ -45,11 +47,11 @@ public final class JCYDocument extends Document {
 
     @Override
     public String toString() {
-        return String.format("Title: %s, dateStr: %s, url: %s", this.getTitle(), this.dateStr, this.getOriginalUrl());
+        return String.format("Title: %s, dateStr: %s, url: %s", this.getTitle(), this.date, this.getUrl());
     }
 
-    private void setDateStr(String dateStr) {
-        this.dateStr = dateStr;
+    private void setDate(String dateStr) {
+        this.date = dateStr;
         this.update("Date", dateStr);
     }
 
@@ -58,13 +60,13 @@ public final class JCYDocument extends Document {
         this.update("Content", content);
     }
 
-    private void setOriginalUrl(String url) {
-        this.originalUrl = url;
+    private void setUrl(String url) {
+        this.url = url;
         this.update("Url", url);
     }
 
     private void set_id() {
-        this._id = MongoDBUtils.generateId(this.getDateStr(), this.getOriginalUrl());
+        this._id = MongoDBUtils.generateId(this.getDate(), this.getUrl());
         this.update("_id", this.get_id());
     }
 

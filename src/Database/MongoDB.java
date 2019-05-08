@@ -48,6 +48,8 @@ public final class MongoDB {
 
             this.settingsCollection = this.database.getCollection(DatabaseSettings.MongoDB.SETTING_COLLECTION);
             this.jcyCollection = this.database.getCollection(DatabaseSettings.MongoDB.JCY_COLLECTION);
+            this.jcyCollection.createIndex(new Document("Content", "text"));
+//                    .append("default_language", "zhs"));
         } catch (Exception ex) {
             Log.log(ex);
         }

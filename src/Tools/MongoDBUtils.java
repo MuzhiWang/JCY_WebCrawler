@@ -45,9 +45,9 @@ public final class MongoDBUtils {
         Iterator<Document> iterator = null;
         Bson search = new Document(
                 "$text",
-                new Document("$search", contentQueryStr)
-                    .append("$caseSensitive", true))
-                .append("$diacriticSensitive", false);
+                new Document("$search", contentQueryStr));
+//                    .append("$caseSensitive", true));
+//                .append("$diacriticSensitive", false);
         iterator = mongoCollection.find(search).limit(queryCount).iterator();
 
         List<Document> res = new ArrayList<>();

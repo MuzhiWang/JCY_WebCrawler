@@ -7,6 +7,8 @@ import Tools.MongoDBUtils;
 import Tools.FileUtils;
 import Tools.HTMLUtils;
 import Tools.Log;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.bson.json.JsonReader;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
@@ -24,24 +26,28 @@ public final class JCYWebCrawler extends WebCrawlerBase {
 
     public JCYWebCrawler(String rootFolder) {
         this.ROOT_FOLDER = rootFolder;
+        this.mongoDB = new MongoDB();
         this.initialExistFilesMap();
     }
 
     @Override
-    protected void onStart() {
+    protected void onStart() throws Exception {
         this.initialExistFilesMap();
-        this.mongoDB = new MongoDB();
 
-        List<org.bson.Document> docs = MongoDBUtils.queryDocumentByContent(this.mongoDB.getJcyCollection(), "不诉", 10);
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<org.bson.Document> docs = MongoDBUtils.queryDocumentByContent(this.mongoDB.getJcyCollection(), "安徽省宿松", 10);
         for (org.bson.Document doc : docs) {
-            JCYDocument jcyDoc = (JCYDocument) doc;
+            String json = doc.toJson();
+            Log.log(json);
+            JCYDocument jcyDoc = mapper.readValue(json, JCYDocument.class);
             Log.log(jcyDoc);
         }
     }
 
     @Override
     protected void inProcess() throws Exception {
-        for (int i = 350; i < 351; ++i) {
+        for (int i = 350; i < 350; ++i) {
             if (i == 1) {
                 if (!this.querySummaryPage("")) {
                     break;

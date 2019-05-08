@@ -17,11 +17,11 @@ public abstract class WebCrawlerBase implements Runnable {
         this.visitedPages = new HashMap<>();
     }
 
-    protected abstract void onStart();
+    protected abstract void onStart() throws Exception;
 
     protected abstract void inProcess() throws Exception;
 
-    protected abstract void beforeEnd();
+    protected abstract void beforeEnd() throws Exception;
 
     @Override
     public void run() {
